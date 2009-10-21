@@ -218,3 +218,23 @@ atmega8.build.mcu=atmega8
 atmega8.build.f_cpu=16000000L
 atmega8.build.core=arduino
 
+##############################################################
+
+avrmt.name=AVR-MT-128
+
+avrmt.upload.protocol=avr109
+avrmt.upload.maximum_size=16000
+avrmt.upload.speed=115200
+
+avrmt.bootloader.low_fuses=0xef
+avrmt.bootloader.high_fuses=0x9a
+avrmt.bootloader.extended_fuses=0xff
+avrmt.bootloader.path=avr-mt-128
+avrmt.bootloader.file=foodloader.hex
+avrmt.bootloader.unlock_bits=0xff
+avrmt.bootloader.lock_bits=0xdf
+
+avrmt.build.mcu=atmega128
+avrmt.build.f_cpu=16000000L
+avrmt.build.core=avrmt
+
