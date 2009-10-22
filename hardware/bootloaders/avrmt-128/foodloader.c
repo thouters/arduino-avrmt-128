@@ -36,10 +36,34 @@
 #ifdef HONOR_WATCHDOG_RESET
 #   include <avr/wdt.h>
 #endif
+#   include <avr/wdt.h>
+#ifdef WDTUSE
+#define CLEARPOINT wdt_reset()
+#else
+#define CLEARPOINT ;
+#endif
 
-uint16_t flash_address;             /* start flash (byte address, converted) write at this address */
+uint32_t flash_address;             /* start flash (byte address, converted) write at this address */
 uint16_t eeprom_address;            /* start eerprom (byte address) write at this address */
 
+volatile uint8_t status;
+#define LD_REFUSEBOOT 1     // keep rebooting into bootloader
+#define LD_OKAY 0xff        // firmware loaded
+#define LD_LOADRQ 0         // bootloader request
+
+
+uint8_t firstbootloader EEMEM = LD_REFUSEBOOT;
+
+void byeints(void) \
+__attribute__((naked)) \
+__attribute__((section(".init0")));
+
+void byeints(void)
+{
+    MCUSR = 0;
+    wdt_disable();
+    cli();
+}
 
 /* prototypes */
 void (*jump_to_application)(void) = (void *)0x0000;
@@ -49,7 +73,6 @@ void (*jump_to_application)(void) = (void *)0x0000;
 #define LOW(x)  ( (uint8_t) x )
 
 #define noinline __attribute__((noinline))
-
 
 /** output one character */
 static noinline void uart_putc(uint8_t data)
@@ -81,7 +104,6 @@ static noinline uint8_t uart_getc(void)
 
     /* wait if a byte has been received */
     while (!(_UCSRA_UART0 & _BV(_RXC_UART0)));
-
     /* return received byte */
     return _UDR_UART0;
 
@@ -110,16 +132,18 @@ static inline uint8_t wait_for_char(void)
 static inline void init_uart(void)
 /*{{{*/ {
 
+    uint8_t dummy;
+    _UCSRB_UART0 =0;
+    _UCSRA_UART0 =0;
     /* set baud rate */
     _UBRRH_UART0 = (uint8_t)(UART_UBRR >> 8);  /* high byte */
     _UBRRL_UART0 = (uint8_t)UART_UBRR;         /* low byte */
 
     /* set mode */
     _UCSRC_UART0 = UART_UCSRC;
-
     /* enable transmitter, receiver */
     _UCSRB_UART0 = _BV(_TXEN_UART0) | _BV(_RXEN_UART0);
-
+    dummy = _UDR_UART0;
 } /* }}} */
 
 /** move interrupt vectors to application section and jump to main program */
@@ -136,21 +160,63 @@ static noinline void start_application(void)
 
 } /* }}} */
 
+void locking(uint8_t cmd);
+void locking(uint8_t cmd)
+{
+    uint8_t new;
+        switch (cmd)
+        {
+            case 'P':   /* enter programming mode, respond with CR */
+            case 'A':   /* set write address start (in words), read high and low byte and respond with CR */
+            case 'B':   /* start block flash or eeprom load (fill mcu internal page buffer) */
+            case 'e':   /* do a chip-erase, respond with CR afterwards */
+                new = LD_REFUSEBOOT;
+                break;
+
+            case 'L':   /* leave programming mode, respond with CR */
+            case 'E':   /* exit bootloader */
+                new = LD_OKAY;
+                break;
+            default:    /* default: respond with '?' */
+                return;
+            break;
+        }
+
+    if (status != new)
+    {
+            status = new;
+            eeprom_write_byte(0,new);
+            eeprom_busy_wait();
+    }
+}
+void chiperase(void);
+void chiperase(void)
+{
+    for (flash_address = 0; flash_address < BOOT_SECTION_START; flash_address += SPM_PAGESIZE) {
+        CLEARPOINT;
+        boot_page_erase_safe(flash_address);
+    }
+}
+
 int main(void)
 /* {{{ */ {
+    uint8_t command;
 
+    status = eeprom_read_byte(0);
 #   ifdef HONOR_WATCHDOG_RESET
+    if (status == LD_OKAY)
+    {
     /* if this reset was caused by the watchdog timer, just start the
      * application, else disable the watchdog */
     if (MCUSR & _BV(WDRF))
         jump_to_application();
     else
         wdt_disable();
+    }
 #   endif
 
 
     uint8_t memory_type;
-
     /* BUF_T is defined in config.h, according the pagesize */
     BUF_T buffer_size;
 
@@ -158,6 +224,7 @@ int main(void)
 
     /* send boot message */
 #   if SEND_BOOT_MESSAGE
+    if (status == LD_OKAY)
         uart_putc('b');
 #   endif
 
@@ -166,20 +233,19 @@ int main(void)
     BOOTLOADER_PORT |= BOOTLOADER_MASK;
 
     /* bootloader activation methods */
-    if (
+    if (!(
 #   ifdef BOOTLOADER_JUMPER
             /* 1) activation via jumper */
             ((BOOTLOADER_PIN & BOOTLOADER_MASK) == 0) ||
 #   endif
+//            (status==LD_REFUSEBOOT) ||
+            (status==LD_LOADRQ) ||
 #   ifdef BOOTLOADER_CHAR
             /* 2) or activation via char */
             wait_for_char() ||
 #   endif
-            0) {
+            0)) {
 
-        goto start_bootloader;
-
-    } else {
 #       if SEND_BOOT_MESSAGE
         uart_putc('a');
 #       endif
@@ -187,28 +253,34 @@ int main(void)
         start_application();
     }
 
-
-start_bootloader:
-
+/*
 #   if SEND_BOOT_MESSAGE
-    uart_putc('p');
+    if (status==LD_OKAY)
+        uart_putc('p');
 #   endif
+*/
 
     /* main loop */
     while (1)
     {
-        uint8_t command;
 
+#ifdef WDTUSE
+        wdt_disable();
+#endif
         /* block until a command has been received */
         command = uart_getc();
-
+#ifdef WDTUSE
+        wdt_enable(WDTO_1S);
+#endif
         switch (command)
         {
             case 'P':   /* enter programming mode, respond with CR */
+                        locking(command);
+                        chiperase();
+                        uart_putc('\r');
+                        break;
             case 'L':   /* leave programming mode, respond with CR */
-#if EXIT_BOOTLOADER == 0
-            case 'E':   /* exit bootloader, ignored */
-#endif
+                        locking(command);
                         uart_putc('\r');
                         break;
 
@@ -226,6 +298,7 @@ start_bootloader:
                          * word address so convert it */
                         flash_address = eeprom_address << 1;
 
+                        locking(command);
                         /* acknowledge */
                         uart_putc('\r');
                         break;
@@ -238,10 +311,7 @@ start_bootloader:
                         /* iterate over all pages in flash, and try to erase every single
                          * one of them (the bootloader section should be protected by lock-bits (!) */
 
-                        for (flash_address = 0; flash_address < BOOT_SECTION_START; flash_address += SPM_PAGESIZE) {
-                            boot_page_erase_safe(flash_address);
-                        }
-
+                        chiperase(); 
                         uart_putc('\r');
                         break;
 
@@ -279,13 +349,18 @@ start_bootloader:
                         uart_putc('S');
                         break;
 
-#if EXIT_BOOTLOADER == 1
             case 'E':   /* exit bootloader */
-#endif
-            case 'X':   /* start application */
-
-                        start_application();
+                        locking(command);
                         uart_putc('\r');
+#if EXIT_BOOTLOADER == 1
+                        asm("jmp 0xf800");
+#endif
+                        break;
+            case 'X':   /* start application */
+                        locking(command);
+                        uart_putc('\r');
+//                        if (status != LD_REFUSEBOOT) 
+                            start_application();
 
                         break;
 
@@ -298,6 +373,7 @@ start_bootloader:
             case 'B':   /* start block flash or eeprom load (fill mcu internal page buffer) */
                         /* {{{ */
 
+                        locking(command);
                         /* first, read buffer size (in bytes) */
                         buffer_size = (uart_getc() << 8) | uart_getc();
 
@@ -336,6 +412,7 @@ start_bootloader:
                                 /* increment by two, since temp_address is a byte
                                  * address, but we are writing words! */
                                 temp_address += 2;
+                            CLEARPOINT;
                             }
 
                             /* after filling the temp buffer, write the page and wait till we're done */
@@ -363,6 +440,7 @@ start_bootloader:
                                 eeprom_write_byte( (uint8_t *)eeprom_address, temp_data);
 
                                 eeprom_address++;
+                            CLEARPOINT;
                             }
 
                             uart_putc('\r');
@@ -379,6 +457,7 @@ start_bootloader:
             case 'g':   /* start block flash or eeprom read */
                         /* {{{ */
 
+                        locking(command);
                         /* first, read byte counter */
                         buffer_size = (uart_getc() << 8) | uart_getc();
 
@@ -445,6 +524,5 @@ start_bootloader:
                         uart_putc('?');
                         break;
         }
-
     }
 } /* }}} */

@@ -55,6 +55,11 @@ else ifeq ($(MCU),atmega644)
 	# atmega644 with 512 words bootloader:
 	# bootloader section starts at 0x7e00 (word-address) == 0xfc00 (byte-address)
 	#BOOT_SECTION_START = 0xfc00
+else ifeq ($(MCU),atmega128)
+	# with 2048 words bootloader:
+	BOOT_SECTION_START = 0x1f000
+	#
+	# with 1024 words bootloader:
 endif
 
 LDFLAGS += -Wl,--section-start=.text=$(BOOT_SECTION_START)
@@ -62,7 +67,7 @@ CFLAGS += -DBOOT_SECTION_START=$(BOOT_SECTION_START)
 
 OBJECTS += $(patsubst %.c,%.o,$(shell echo *.c))
 HEADERS += $(shell echo *.h)
-CFLAGS += -Werror
+#CFLAGS += -Werror
 LDFLAGS += -L/usr/local/avr/avr/lib
 
 
@@ -104,8 +109,11 @@ uploadtest: datatestfile.raw
 	@echo "uploading datatestfile"
 	$(AVRDUDE) $(AVRDUDE_FLAGS) -c $(SERIAL_PROG) -s -u -P $(SERIAL_DEV) -U f:w:$<:r
 
-lock:
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -c avr910 -P $(ISP_DEV) -U lock:w:0x2f:m
+fuses:
+	avarice -2 --jtag usb: --part atmega128 -r -W ff9aef -L	df 
+
+isp:
+	avarice -I -2 --jtag usb: --part atmega128 --erase --program --verify --file foodloader -L df -W ff9aef
 
 launcher:
 	$(MAKE) -C launcher

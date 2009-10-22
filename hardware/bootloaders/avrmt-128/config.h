@@ -215,6 +215,40 @@
     #define _AVR910_DEVCODE 0x02
 
     /* }}} */
+   #elif defined(__AVR_ATmega128__)
+    /* {{{ */
+    #define _ATMEGA128
+
+    #define _TIMSK_TIMER1 TIMSK1
+    #define _UDRIE_UART0 UDRIE1
+    #define _TXEN_UART0 TXEN1
+    #define _RXEN_UART0 RXEN1
+    #define _RXCIE_UART0 RXCIE1
+    #define _UBRRH_UART0 UBRR1H
+    #define _UBRRL_UART0 UBRR1L
+    #define _UCSRA_UART0 UCSR1A
+    #define _UCSRB_UART0 UCSR1B
+    #define _UCSRC_UART0 UCSR1C
+    #define _UCSZ0_UART0 UCSZ10
+    #define _UCSZ1_UART0 UCSZ11
+    #define _SIG_UART_RECV_UART1 SIG_USART_RECV
+    #define _SIG_UART_DATA_UART1 SIG_USART_DATA
+    #define _UDR_UART0 UDR1
+    #define _UDRE_UART0 UDRE1
+    #define _RXC_UART0 RXC1
+    #define _IVREG MCUCR
+    #define _TIFR_TIMER1 TIFR1
+
+    /* see datasheet! */
+    #define _SIG_BYTE_1 0x1e
+    #define _SIG_BYTE_2 0x97
+    #define _SIG_BYTE_3 0x02
+
+    /* see avrdude configuration */
+    #define _AVR910_DEVCODE 0x44
+
+    /* }}} */
+
     #else
     #error "this cpu is not supported yet!"
     #endif
@@ -228,35 +262,35 @@
 
 /* do not send boot message by default */
 #ifndef SEND_BOOT_MESSAGE
-#define SEND_BOOT_MESSAGE 0
+#define SEND_BOOT_MESSAGE 1
 #endif
 
 /* bootloader activation methods */
 
 /* 1) activation via jumper */
-//#define BOOTLOADER_JUMPER
+#define BOOTLOADER_JUMPER
 
 /* jumper configuration */
 #ifndef BOOTLOADER_DDR
-#define BOOTLOADER_DDR DDRC
+#define BOOTLOADER_DDR DDRA
 #endif
 
 #ifndef BOOTLOADER_PORT
-#define BOOTLOADER_PORT PORTC
+#define BOOTLOADER_PORT PORTA
 #endif
 
 #ifndef BOOTLOADER_PIN
-#define BOOTLOADER_PIN PINC
+#define BOOTLOADER_PIN PINA
 #endif
 
 #ifndef BOOTLOADER_PINNUM
-#define BOOTLOADER_PINNUM PINC0
+#define BOOTLOADER_PINNUM PINA1
 #endif
 
 #define BOOTLOADER_MASK _BV(BOOTLOADER_PINNUM)
 
 /* 2) activation via char */
-//#define BOOTLOADER_CHAR
+#define BOOTLOADER_CHAR
 
 #ifndef BOOTLOADER_ENTRY_CHAR
 #define BOOTLOADER_ENTRY_CHAR 'p'
@@ -278,7 +312,7 @@
 #define BLOCKSIZE SPM_PAGESIZE
 
 /* by default, ignore the exit-bootloader command */
-#define EXIT_BOOTLOADER 0
+#define EXIT_BOOTLOADER 1
 
 /* use 8 or 16 bit counter, according to the page size of the target device */
 #if SPM_PAGESIZE < 256
