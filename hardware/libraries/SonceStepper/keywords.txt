@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map For SonceStepper
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+SonceStepper	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+setSpeed    KEYWORD2
+setDirection	KEYWORD2
+Step	KEYWORD2
+turnRevs    KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+STEPFORWARD	LITERAL1
+STEPBACKWARD	LITERAL1
+STEPNORMAL	LITERAL1
+STEPBOOST	LITERAL1
