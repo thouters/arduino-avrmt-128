@@ -175,24 +175,30 @@ void init()
 	// (using phase-correct PWM would mean that timer 0 overflowed half as often
 	// resulting in different millis() behavior on the ATmega8 and ATmega168)
 #if !defined(__AVR_ATmega8__)
+#if !defined(__AVR_ATmega128__)
 	sbi(TCCR0A, WGM01);
 	sbi(TCCR0A, WGM00);
+#endif  
 #endif  
 	// set timer 0 prescale factor to 64
 #if defined(__AVR_ATmega8__)
 	sbi(TCCR0, CS01);
 	sbi(TCCR0, CS00);
+#elif defined(__AVR_ATmega128__)
+	sbi(TCCR0, CS02);
+//	sbi(TCCR0, CS01);
+//	sbi(TCCR0, CS00);
 #else
 	sbi(TCCR0B, CS01);
 	sbi(TCCR0B, CS00);
 #endif
 	// enable timer 0 overflow interrupt
-#if defined(__AVR_ATmega8__)
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
 	sbi(TIMSK, TOIE0);
 #else
 	sbi(TIMSK0, TOIE0);
 #endif
-
+/*
 	// timers 1 and 2 are used for phase-correct hardware pwm
 	// this is better for motors as it ensures an even waveform
 	// note, however, that fast pwm mode can achieve a frequency of up
@@ -205,13 +211,13 @@ void init()
 	sbi(TCCR1A, WGM10);
 
 	// set timer 2 prescale factor to 64
-#if defined(__AVR_ATmega8__)
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
 	sbi(TCCR2, CS22);
 #else
 	sbi(TCCR2B, CS22);
 #endif
 	// configure timer 2 for phase correct pwm (8-bit)
-#if defined(__AVR_ATmega8__)
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
 	sbi(TCCR2, WGM20);
 #else
 	sbi(TCCR2A, WGM20);
@@ -238,6 +244,7 @@ void init()
 
 	// enable a2d conversions
 	sbi(ADCSRA, ADEN);
+*/
 
 	// the bootloader connects pins 0 and 1 to the USART; disconnect them
 	// here so they can be used as normal digital i/o; they will be
@@ -248,3 +255,4 @@ void init()
 	UCSR0B = 0;
 #endif
 }
+

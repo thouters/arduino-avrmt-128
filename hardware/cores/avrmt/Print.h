@@ -58,5 +58,5 @@ class Print
     void println(long, int);
     void println(double);
 };
-
+extern "C" void __cxa_pure_virtual(void); 
 #endif

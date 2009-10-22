@@ -53,7 +53,7 @@ static inline void turnOffPWM(uint8_t timer)
 	if (timer == TIMER1A) cbi(TCCR1A, COM1A1);
 	if (timer == TIMER1B) cbi(TCCR1A, COM1B1);
 
-#if defined(__AVR_ATmega8__)
+#if defined(__AVR_ATmega8__)||defined(__AVR_ATmega128__)
 	if (timer == TIMER2) cbi(TCCR2, COM21);
 #else
 	if (timer == TIMER0A) cbi(TCCR0A, COM0A1);
@@ -86,7 +86,7 @@ void digitalWrite(uint8_t pin, uint8_t val)
 
 	// If the pin that support PWM output, we need to turn it off
 	// before doing a digital write.
-	if (timer != NOT_ON_TIMER) turnOffPWM(timer);
+//	if (timer != NOT_ON_TIMER) turnOffPWM(timer);
 
 	out = portOutputRegister(port);
 
@@ -104,7 +104,7 @@ int digitalRead(uint8_t pin)
 
 	// If the pin that support PWM output, we need to turn it off
 	// before getting a digital reading.
-	if (timer != NOT_ON_TIMER) turnOffPWM(timer);
+//	if (timer != NOT_ON_TIMER) turnOffPWM(timer);
 
 	if (*portInputRegister(port) & bit) return HIGH;
 	return LOW;

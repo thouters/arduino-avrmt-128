@@ -43,6 +43,7 @@ int analogRead(uint8_t pin)
 	// channel (low 4 bits).  this also sets ADLAR (left-adjust result)
 	// to 0 (the default).
 	ADMUX = (analog_reference << 6) | (pin & 0x0f);
+	//ADMUX = (analog_reference << 6) | (pin & 0x07);
   
 #if defined(__AVR_ATmega1280__)
 	// the MUX5 bit of ADCSRB selects whether we're reading from channels
@@ -93,7 +94,7 @@ void analogWrite(uint8_t pin, int val)
 		sbi(TCCR1A, COM1B1);
 		// set pwm duty
 		OCR1B = val;
-#if defined(__AVR_ATmega8__)
+#if defined(__AVR_ATmega8__) || defined(__AVR_ATmega128__)
 	} else if (digitalPinToTimer(pin) == TIMER2) {
 		// connect pwm to pin on timer 2, channel B
 		sbi(TCCR2, COM21);

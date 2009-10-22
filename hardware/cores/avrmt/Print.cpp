@@ -25,6 +25,8 @@
 #include "wiring.h"
 
 #include "Print.h"
+extern "C" void __cxa_pure_virtual(void); 
+void __cxa_pure_virtual(void) {}; 
 
 // Public Methods //////////////////////////////////////////////////////////////
 

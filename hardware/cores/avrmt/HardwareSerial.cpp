@@ -41,8 +41,10 @@ struct ring_buffer {
 
 ring_buffer rx_buffer = { { 0 }, 0, 0 };
 
-#if defined(__AVR_ATmega1280__)
+#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega128__)
 ring_buffer rx_buffer1 = { { 0 }, 0, 0 };
+#endif
+#if defined(__AVR_ATmega1280__)
 ring_buffer rx_buffer2 = { { 0 }, 0, 0 };
 ring_buffer rx_buffer3 = { { 0 }, 0, 0 };
 #endif
@@ -61,20 +63,37 @@ inline void store_char(unsigned char c, ring_buffer *rx_buffer)
   }
 }
 
-#if defined(__AVR_ATmega1280__)
+#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega128__)
 
+#include <avr/eeprom.h>
 SIGNAL(SIG_USART0_RECV)
 {
   unsigned char c = UDR0;
+  if (c == 0x1b)
+  {
+    cli();
+    eeprom_write_byte(0,0);
+    eeprom_busy_wait();
+    asm("jmp 0xf800");
+  }
   store_char(c, &rx_buffer);
 }
 
 SIGNAL(SIG_USART1_RECV)
 {
   unsigned char c = UDR1;
+  if (c == 0x1b)
+  {
+    cli();
+    eeprom_write_byte(0,0);
+    eeprom_busy_wait();
+    asm("jmp 0xf800");
+  }
   store_char(c, &rx_buffer1);
 }
+#endif 
 
+#if defined(__AVR_ATmega1280__)
 SIGNAL(SIG_USART2_RECV)
 {
   unsigned char c = UDR2;
@@ -87,8 +106,9 @@ SIGNAL(SIG_USART3_RECV)
   store_char(c, &rx_buffer3);
 }
 
-#else
+#endif
 
+#if ! defined(__AVR_ATmega128__)
 #if defined(__AVR_ATmega8__)
 SIGNAL(SIG_UART_RECV)
 #else
@@ -208,6 +228,9 @@ void HardwareSerial::write(uint8_t c)
 
 #if defined(__AVR_ATmega8__)
 HardwareSerial Serial(&rx_buffer, &UBRRH, &UBRRL, &UCSRA, &UCSRB, &UDR, RXEN, TXEN, RXCIE, UDRE, U2X);
+#elif defined(__AVR_ATmega128__)
+HardwareSerial Serial(&rx_buffer1, &UBRR1H, &UBRR1L, &UCSR1A, &UCSR1B, &UDR1, RXEN1, TXEN1, RXCIE1, UDRE1, U2X1);
+HardwareSerial Serial0(&rx_buffer, &UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UDR0, RXEN0, TXEN0, RXCIE0, UDRE0, U2X0);
 #else
 HardwareSerial Serial(&rx_buffer, &UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UDR0, RXEN0, TXEN0, RXCIE0, UDRE0, U2X0);
 #endif

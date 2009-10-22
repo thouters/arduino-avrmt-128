@@ -1,3 +1,4 @@
+// vim: set foldmethod=syntax :
 /*
   pins_arduino.c - pin definitions for the Arduino board
   Part of Arduino / Wiring Lite
@@ -355,6 +356,289 @@ const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
 	NOT_ON_TIMER	, // PK 6 ** 68 ** A14	
 	NOT_ON_TIMER	, // PK 7 ** 69 ** A15	
 };
+
+#elif defined(__AVR_ATmega128__)
+const uint16_t PROGMEM port_to_mode_PGM[] = {
+	NOT_A_PORT,
+	&DDRA,
+	&DDRB,
+	&DDRC,
+	&DDRD,
+	&DDRE,
+	&DDRF,
+	&DDRG,
+};
+
+const uint16_t PROGMEM port_to_output_PGM[] = {
+	NOT_A_PORT,
+	&PORTA,
+	&PORTB,
+	&PORTC,
+	&PORTD,
+	&PORTE,
+	&PORTF,
+	&PORTG,
+};
+
+const uint16_t PROGMEM port_to_input_PGM[] = {
+	NOT_A_PIN,
+	&PINA,
+	&PINB,
+	&PINC,
+	&PIND,
+	&PINE,
+	&PINF,
+	&PING,
+};
+
+const uint8_t PROGMEM digital_pin_to_port_PGM[] = {
+	// PORTLIST		
+	// -------------------------------------------		
+	0	, //      ** 00 ** 
+	0	, // PEN  ** 01 ** PEN
+        
+	PE	, // PE 0 ** 02 ** RXD0
+	PE	, // PE 1 ** 03 ** TXD0
+	PE	, // PE 2 ** 04 ** XCK0
+	PE	, // PE 3 ** 05 ** OC3A
+	PE	, // PE 4 ** 06 ** OC3B
+	PE	, // PE 5 ** 07 ** OC3C
+	PE	, // PE 6 ** 08 ** T3
+	PE	, // PE 7 ** 09 ** ICP3
+
+	PB	, // PB 0 ** 10 ** SS
+	PB	, // PB 1 ** 11 ** SCK
+	PB	, // PB 2 ** 12 ** MOSI
+	PB	, // PB 3 ** 13 ** MISO
+	PB	, // PB 4 ** 14 ** OC0
+	PB	, // PB 5 ** 15 ** OC1A
+	PB	, // PB 6 ** 16 ** OC1B
+	PB	, // PB 7 ** 17 ** OC1C
+
+	PG	, // PG 3 ** 18 ** TOSC2
+	PG	, // PG 4 ** 19 ** TOSC2
+	0  	, //      ** 20 ** RESET
+	0  	, //      ** 21 ** VCC
+	0  	, //      ** 22 ** GND
+	0  	, //      ** 23 ** XTAL2
+	0  	, //      ** 24 ** XTAL1
+        
+        PD	, // PD 0 ** 25 ** SCL
+	PD	, // PD 1 ** 26 ** SDA
+	PD	, // PD 2 ** 27 ** RXD1
+	PD	, // PD 3 ** 28 ** TXD1
+	PD	, // PD 4 ** 29 ** ICP1
+	PD	, // PD 5 ** 30 ** XCK1
+	PD	, // PD 6 ** 31 ** T1
+	PD	, // PD 7 ** 32 ** T2
+
+	PG	, // PG 0 ** 33 ** WR
+	PG	, // PG 1 ** 34 ** RD
+
+        PC	, // PC 0 ** 35 ** A8
+	PC	, // PC 1 ** 36 ** A9
+	PC	, // PC 2 ** 37 ** A10
+	PC	, // PC 3 ** 38 ** A11
+	PC	, // PC 4 ** 39 ** A12
+	PC	, // PC 5 ** 40 ** A13
+	PC	, // PC 6 ** 41 ** A14
+	PC	, // PC 7 ** 42 ** A15
+
+	PG	, // PG 2 ** 43 ** ALE
+
+	PA	, // PG 7 ** 44 ** AD7
+        PA	, // PA 6 ** 45 ** AD6
+	PA	, // PA 5 ** 46 ** AD5
+	PA	, // PA 4 ** 47 ** AD4
+	PA	, // PA 3 ** 48 ** AD3
+	PA	, // PA 2 ** 49 ** AD2
+	PA	, // PA 1 ** 50 ** AD1
+	PA	, // PA 0 ** 51 ** AD0
+
+	0       , //      ** 52 ** VCC
+	0       , //      ** 53 ** GND
+
+        PF	, // PF 7 ** 54 ** ADC7
+	PF	, // PF 6 ** 55 ** ADC6
+	PF	, // PF 5 ** 56 ** ADC5
+	PF	, // PF 4 ** 57 ** ADC4
+	PF	, // PF 3 ** 58 ** ADC3
+	PF	, // PF 2 ** 59 ** ADC2
+	PF	, // PF 1 ** 60 ** ADC1
+	PF	, // PF 0 ** 61 ** ADC0
+
+	0       , //      ** 62 ** AREF
+	0       , //      ** 63 ** GND
+	0       , //      ** 64 ** AVCC
+};
+
+const uint8_t PROGMEM digital_pin_to_bit_mask_PGM[] = {
+	// PIN IN PORT		
+	// -------------------------------------------		
+	   ( 0 ), //      ** 00 ** 
+   	   ( 0 ), // PEN  ** 01 ** PEN
+
+	_BV( 0 ), // PE 0 ** 02 ** RXD0
+	_BV( 1 ), // PE 1 ** 03 ** TXD0
+	_BV( 2 ), // PE 2 ** 04 ** XCK0
+	_BV( 3 ), // PE 3 ** 05 ** OC3A
+	_BV( 4 ), // PE 4 ** 06 ** OC3B
+	_BV( 5 ), // PE 5 ** 07 ** OC3C
+	_BV( 6 ), // PE 6 ** 08 ** T3
+	_BV( 7 ), // PE 7 ** 09 ** ICP3
+                
+	_BV( 0 ), // PB 0 ** 10 ** SS
+	_BV( 1 ), // PB 1 ** 11 ** SCK
+	_BV( 2 ), // PB 2 ** 12 ** MOSI
+	_BV( 3 ), // PB 3 ** 13 ** MISO
+	_BV( 4 ), // PB 4 ** 14 ** OC0
+	_BV( 5 ), // PB 5 ** 15 ** OC1A
+	_BV( 6 ), // PB 6 ** 16 ** OC1B
+	_BV( 7 ), // PB 7 ** 17 ** OC1C
+                
+	_BV( 3 ), // PG 3 ** 18 ** TOSC2
+	_BV( 4 ), // PG 4 ** 19 ** TOSC2
+	   ( 0 ) ,//      ** 20 ** RESET
+	   ( 0 ) ,//      ** 21 ** VCC
+	   ( 0 ) ,//      ** 22 ** GND
+	   ( 0 ) ,//      ** 23 ** XTAL2
+	   ( 0 ) ,//      ** 24 ** XTAL1
+
+        _BV( 0 ),// PD 0 ** 25 ** SCL
+	_BV( 1 ),// PD 1 ** 26 ** SDA
+	_BV( 2 ),// PD 2 ** 27 ** RXD1
+	_BV( 3 ),// PD 3 ** 28 ** TXD1
+	_BV( 4 ),// PD 4 ** 29 ** ICP1
+	_BV( 5 ),// PD 5 ** 30 ** XCK1
+	_BV( 6 ),// PD 6 ** 31 ** T1
+	_BV( 7 ),// PD 7 ** 32 ** T2
+                
+	_BV( 0 ),// PG 0 ** 33 ** WR
+	_BV( 1 ),// PG 1 ** 34 ** RD
+               
+        _BV( 0 ),// PC 0 ** 35 ** A8
+	_BV( 1 ),// PC 1 ** 36 ** A9
+	_BV( 2 ),// PC 2 ** 37 ** A10
+	_BV( 3 ),// PC 3 ** 38 ** A11
+	_BV( 4 ),// PC 4 ** 39 ** A12
+	_BV( 5 ),// PC 5 ** 40 ** A13
+
+	_BV( 6 ),// PC 6 ** 41 ** A14
+	_BV( 7 ),// PC 7 ** 42 ** A15
+               
+	_BV( 2 ),// PG 2 ** 43 ** ALE
+               
+        _BV( 7 ),// PA 7 ** 44 ** AD7
+        _BV( 6 ),// PA 6 ** 45 ** AD6
+	_BV( 5 ),// PA 5 ** 46 ** AD5
+	_BV( 4 ),// PA 4 ** 47 ** AD4
+	_BV( 3 ),// PA 3 ** 48 ** AD3
+	_BV( 2 ),// PA 2 ** 49 ** AD2
+	_BV( 1 ),// PA 1 ** 50 ** AD1
+	_BV( 0 ),// PA 0 ** 51 ** AD0
+               
+	   ( 0 ),//      ** 52 ** VCC
+	   ( 0 ),//      ** 53 ** GND
+               
+        _BV( 7 ),// PF 7 ** 54 ** ADC7
+	_BV( 6 ),// PF 6 ** 55 ** ADC6
+	_BV( 5 ),// PF 5 ** 56 ** ADC5
+	_BV( 4 ),// PF 4 ** 57 ** ADC4
+	_BV( 3 ),// PF 3 ** 58 ** ADC3
+	_BV( 2 ),// PF 2 ** 59 ** ADC2
+	_BV( 1 ),// PF 1 ** 60 ** ADC1
+	_BV( 0 ),// PF 0 ** 61 ** ADC0
+               
+	   ( 0 ),//      ** 62 ** AREF
+	   ( 0 ),//      ** 63 ** GND
+	   ( 0 ),//      ** 64 ** AVCC
+};
+
+const uint8_t PROGMEM digital_pin_to_timer_PGM[] = {
+	// TIMERS		
+	// -------------------------------------------		
+        
+        NOT_ON_TIMER	, //      ** 00 ** 
+        NOT_ON_TIMER	, // PEN  ** 01 ** PEN
+        
+	NOT_ON_TIMER	, // PE 0 ** 02 ** RXD0
+	NOT_ON_TIMER	, // PE 1 ** 03 ** TXD0
+	NOT_ON_TIMER	, // PE 2 ** 04 ** XCK0
+	TIMER3A	        , // PE 3 ** 05 ** OC3A
+	TIMER3B	        , // PE 4 ** 06 ** OC3B
+	TIMER3C	        , // PE 5 ** 07 ** OC3C
+	NOT_ON_TIMER	, // PE 6 ** 08 ** T3
+	NOT_ON_TIMER	, // PE 7 ** 09 ** ICP3
+
+	NOT_ON_TIMER	, // PB 0 ** 10 ** SS
+	NOT_ON_TIMER	, // PB 1 ** 11 ** SCK
+	NOT_ON_TIMER	, // PB 2 ** 12 ** MOSI
+	NOT_ON_TIMER	, // PB 3 ** 13 ** MISO
+	NOT_ON_TIMER	, // PB 4 ** 14 ** OC0
+	TIMER1A	        , // PB 5 ** 15 ** OC1A
+	TIMER1B	        , // PB 6 ** 16 ** OC1B
+	TIMER2A	        , // PB 7 ** 17 ** OC1C OC2 !!!!
+
+	PG	        , // PG 3 ** 18 ** TOSC2
+	PG	        , // PG 4 ** 19 ** TOSC2
+	NOT_ON_TIMER  	, //      ** 20 ** RESET
+	NOT_ON_TIMER  	, //      ** 21 ** VCC
+	NOT_ON_TIMER  	, //      ** 22 ** GND
+	NOT_ON_TIMER  	, //      ** 23 ** XTAL2
+	NOT_ON_TIMER  	, //      ** 24 ** XTAL1
+        
+        NOT_ON_TIMER	, // PD 0 ** 25 ** SCL
+	NOT_ON_TIMER	, // PD 1 ** 26 ** SDA
+	NOT_ON_TIMER	, // PD 2 ** 27 ** RXD1
+	NOT_ON_TIMER	, // PD 3 ** 28 ** TXD1
+	NOT_ON_TIMER	, // PD 4 ** 29 ** ICP1
+	NOT_ON_TIMER	, // PD 5 ** 30 ** XCK1
+	NOT_ON_TIMER	, // PD 6 ** 31 ** T1
+	NOT_ON_TIMER	, // PD 7 ** 32 ** T2
+
+	NOT_ON_TIMER	, // PG 0 ** 33 ** WR
+	NOT_ON_TIMER	, // PG 1 ** 34 ** RD
+
+        NOT_ON_TIMER	, // PC 0 ** 35 ** A8
+	NOT_ON_TIMER	, // PC 1 ** 36 ** A9
+	NOT_ON_TIMER    , // PC 2 ** 37 ** A10
+	NOT_ON_TIMER    , // PC 3 ** 38 ** A11
+	NOT_ON_TIMER    , // PC 4 ** 39 ** A12
+	NOT_ON_TIMER    , // PC 5 ** 40 ** A13
+	NOT_ON_TIMER    , // PC 6 ** 41 ** A14
+	NOT_ON_TIMER    , // PC 7 ** 42 ** A15
+
+	NOT_ON_TIMER    , // PG 2 ** 43 ** ALE
+
+	NOT_ON_TIMER    , // PA 7 ** 44 ** AD7
+        NOT_ON_TIMER    , // PA 6 ** 45 ** AD6
+	NOT_ON_TIMER    , // PA 5 ** 46 ** AD5
+	NOT_ON_TIMER    , // PA 4 ** 47 ** AD4
+	NOT_ON_TIMER    , // PA 3 ** 48 ** AD3
+	NOT_ON_TIMER    , // PA 2 ** 49 ** AD2
+	NOT_ON_TIMER    , // PA 1 ** 50 ** AD1
+	NOT_ON_TIMER    , // PA 0 ** 51 ** AD0
+
+	NOT_ON_TIMER    , //      ** 52 ** VCC
+	NOT_ON_TIMER    , //      ** 53 ** GND
+
+        NOT_ON_TIMER    , // PF 7 ** 54 ** ADC7
+	NOT_ON_TIMER    , // PF 6 ** 55 ** ADC6
+	NOT_ON_TIMER    , // PF 5 ** 56 ** ADC5
+	NOT_ON_TIMER    , // PF 4 ** 57 ** ADC4
+	NOT_ON_TIMER    , // PF 3 ** 58 ** ADC3
+	NOT_ON_TIMER    , // PF 2 ** 59 ** ADC2
+	NOT_ON_TIMER    , // PF 1 ** 60 ** ADC1
+	NOT_ON_TIMER    , // PF 0 ** 61 ** ADC0
+
+	NOT_ON_TIMER    , //      ** 62 ** AREF
+	NOT_ON_TIMER    , //      ** 63 ** GND
+	NOT_ON_TIMER    , //      ** 64 ** AVCC
+
+};
+
+
+
 #else
 // these arrays map port names (e.g. port B) to the
 // appropriate addresses for various functions (e.g. reading
