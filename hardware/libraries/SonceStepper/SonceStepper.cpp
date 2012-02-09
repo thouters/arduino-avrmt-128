@@ -14,7 +14,7 @@ SonceStepper::SonceStepper(
     this->_boost_pin   = boost_pin; 
     digitalWrite(this->_pulse_pin,LOW);
     digitalWrite(this->_dir_pin,LOW);
-    digitalWrite(this->_boost_pin,LOW);
+    digitalWrite(this->_boost_pin,HIGH);
     pinMode(this->_pulse_pin,OUTPUT);
     pinMode(this->_dir_pin,OUTPUT);
     pinMode(this->_boost_pin,OUTPUT);

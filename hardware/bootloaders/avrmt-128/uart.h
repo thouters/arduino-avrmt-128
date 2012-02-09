@@ -39,7 +39,7 @@
 
 /* }}} */
 #else
-#error this cpu isn't supported by uart.h yet!
+#error this cpu isnt supported by uart.h yet!
 #endif
 
 /* define UBRR value (see datasheet */

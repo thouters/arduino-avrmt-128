@@ -244,13 +244,13 @@ int main(void)
             /* 2) or activation via char */
             wait_for_char() ||
 #   endif
+            (pgm_read_word((PGM_P)0x0000) == 0xffff) ||
             0)) {
 
 #       if SEND_BOOT_MESSAGE
         uart_putc('a');
 #       endif
-
-        start_application();
+            start_application();
     }
 
 /*

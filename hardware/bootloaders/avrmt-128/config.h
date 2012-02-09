@@ -109,8 +109,8 @@
 
     /* see datasheet! */
     #define _SIG_BYTE_1 0x1e
-    #define _SIG_BYTE_2 0x93
-    #define _SIG_BYTE_3 0x0a
+    #define _SIG_BYTE_2 0x97
+    #define _SIG_BYTE_3 0x02
 
     /* see avrdude configuration */
     #define _AVR910_DEVCODE 0x33
